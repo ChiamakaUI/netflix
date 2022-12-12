@@ -1,24 +1,40 @@
-import logo from './logo.svg';
-import './App.css';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import Home from "./pages/Home";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Login from "./pages/Login";
+import SignUp from "./pages/SignUp";
+import Account from "./pages/Account";
+import { createContext, useState, useEffect } from "react";
 
+export const currentUserContext = createContext();
+
+const queryClient = new QueryClient();
 function App() {
+  const [currentUser, setCurrentUser] = useState(() => {
+    // getting stored value
+    const User = localStorage.getItem("currentUser");
+    const initialValue = JSON.parse(User);
+    return initialValue || {};
+  });
+  useEffect(() => {
+    localStorage.setItem("currentUser", JSON.stringify(currentUser));
+    setCurrentUser(currentUser);
+  }, [currentUser]);
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <currentUserContext.Provider value={{ currentUser, setCurrentUser }}>
+      <Router>
+        <QueryClientProvider client={queryClient}>
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/account" element={<Account />} />
+          </Routes>
+        </QueryClientProvider>
+      </Router>
+    </currentUserContext.Provider>
   );
 }
 
