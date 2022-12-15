@@ -8,7 +8,6 @@ import { currentUserContext } from "../App";
 import { doc, updateDoc, arrayUnion } from "firebase/firestore";
 import { db } from "../config/firebase";
 import axios from "axios";
-// import Tooltip from "./Tooltip";
 import ReactTooltip from "react-tooltip";
 
 const Movie = ({ item }) => {
@@ -21,8 +20,10 @@ const Movie = ({ item }) => {
   useEffect(() => {
     const getTrailer = async () => {
       const res = await axios.get(
-        `https://api.themoviedb.org/3/${item?.media_type === "tv" ? "tv" : "movie"
-        }/${item?.id}?api_key=${process.env.REACT_APP_IMDB_API_KEY
+        `https://api.themoviedb.org/3/${
+          item?.media_type === "tv" ? "tv" : "movie"
+        }/${item?.id}?api_key=${
+          process.env.REACT_APP_IMDB_API_KEY
         }&language=en-US&append_to_response=videos`
       );
       const data = await res.data;
@@ -84,16 +85,17 @@ const Movie = ({ item }) => {
       onMouseLeave={() => setIsShown(false)}
     >
       <img
-        className={`w-full h-auto block  ${isShown ? "rounded-t-lg" : "rounded-lg"
-          }`}
+        className={`w-full h-auto block  ${
+          isShown ? "rounded-t-lg" : "rounded-lg"
+        }`}
         src={`https://image.tmdb.org/t/p/w500/${item?.backdrop_path}`}
         alt={item?.title}
       />
 
       {isShown && (
-        <div className="w-full bg-[#181818] rounded-b-lg">
-          <p className="text-sm text-white ml-2">{item?.title}</p>
-          <div className="h-[95px] flex flex-row justify-between items-center w-[94%] mx-auto">
+        <div className="w-full bg-[#181818]">
+          <p className="text-xs text-white ml-2 text-ellipsis">{item?.title}</p>
+          <div className="h-[55px] flex flex-row justify-between items-center w-[94%] mx-auto">
             <div className="flex flex-row justify-between items-center w-[40%]">
               <BsPlayCircle
                 className="text-2xl text-gray-50"
@@ -107,7 +109,7 @@ const Movie = ({ item }) => {
                   data-for="saveShow"
                 />
                 <ReactTooltip id="saveShow" place="top" effect="solid">
-                  Add to my List
+                  <p className="text-[10px]">Add to my List</p> 
                 </ReactTooltip>
               </div>
 
@@ -122,10 +124,10 @@ const Movie = ({ item }) => {
                     className="text-2xl text-gray-50"
                     onClick={likeMovie}
                     data-tip
-                    data-for="likeShow"
+                    data-for="likeShowToo"
                   />
-                  <ReactTooltip id="likeShow" place="top" effect="solid">
-                    I like this
+                  <ReactTooltip id="likeShowToo" place="top" effect="solid">
+                   <p className="text-[10px]">I like this</p> 
                   </ReactTooltip>
                 </div>
               )}
@@ -138,7 +140,7 @@ const Movie = ({ item }) => {
                 onClick={() => setShowModal(true)}
               />
               <ReactTooltip id="moreInfo" place="top" effect="solid">
-                More Info
+                <p className="text-[10px]">More Info</p> 
               </ReactTooltip>
             </div>
           </div>

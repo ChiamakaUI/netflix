@@ -4,16 +4,23 @@ import axios from "axios";
 import ReactPlayer from "react-player/lazy";
 import { MdCancel } from "react-icons/md";
 import { AiFillLike } from "react-icons/ai";
-import { BsFillPlayFill, BsPlusCircle } from "react-icons/bs";
+import {
+  BsFillPlayFill,
+  BsPlusCircle,
+  BsVolumeMute,
+  BsVolumeUp,
+} from "react-icons/bs";
 import { SlLike } from "react-icons/sl";
 import ReactTooltip from "react-tooltip";
 import { doc, updateDoc, arrayUnion } from "firebase/firestore";
 import { db } from "../config/firebase";
 import { currentUserContext } from "../App";
+
 const Modal = ({ movie, closeFunc }) => {
   const [trailer, setTrailer] = useState("");
   const [genres, setGenres] = useState([]);
   const [like, setLike] = useState(false);
+  const [mute, setMute] = useState(true);
   const { currentUser } = useContext(currentUserContext);
 
   useEffect(() => {
@@ -26,7 +33,6 @@ const Modal = ({ movie, closeFunc }) => {
         }&language=en-US&append_to_response=videos`
       );
       const data = await res.data;
-      console.log(data);
       if (data?.videos) {
         const index = data.videos.results.findIndex(
           (element) => element.type === "Trailer"
@@ -39,7 +45,6 @@ const Modal = ({ movie, closeFunc }) => {
     };
     getTrailer();
   }, [movie]);
-  // console.log(genres);
   const likeMovie = async () => {
     if (Object.keys(currentUser).length === 0) {
       alert("Please, login to like a movie");
@@ -78,18 +83,18 @@ const Modal = ({ movie, closeFunc }) => {
   };
   return createPortal(
     <div className="fixed z-[1000] top-0 left-0 w-full h-full overflow-y-auto overflow-x-hidden	bg-black-overlay">
-      <div className="w-[70%] bg-[#181818] my-[10%] mx-auto shadow-xl h-[1000px] flex flex-col">
+      <div className="w-[70%] bg-[#181818] my-[10%] mx-auto shadow-xl h-[900px] flex flex-col max-w-[1008px] max-[520px]:w-[95%]">
         <MdCancel
           className="text-5xl text-white absolute top-28 right-44 cursor-pointer z-[1000]"
           onClick={() => closeFunc()}
         />
-        <div className="w-full h-[50%] relative">
+        <div className="w-full h-[50%] relative pt-[56.25%]">
           <ReactPlayer
             url={`https://www.youtube.com/watch?v=${trailer}`}
             width="100%"
             height="100%"
             playing
-            muted={true}
+            muted={mute}
           />
           <div className="flex flex-row items-center justify-between absolute bottom-3 bg-black-overlay w-full p-3.5">
             <div className="flex flex-row justify-between items-center w-[20%] ml-8">
@@ -141,22 +146,25 @@ const Modal = ({ movie, closeFunc }) => {
                 )}
               </div>
             </div>
-            <p className="text-3xl text-white ml-6">
-              {movie?.title || movie.original_title}
-            </p>
+            <button onClick={() => setMute(!mute)}>
+              {mute ? (
+                <BsVolumeMute className="text-3xl text-white" />
+              ) : (
+                <BsVolumeUp className="text-3xl text-white" />
+              )}
+            </button>
           </div>
         </div>
         <div className="flex flex-row w-[95%] mx-auto h-[30%] justify-between items-center mt-6">
           <div className="w-[52%] h-full text-gray-200 overflow-hidden break-word text-wrap">
             <p>{movie?.overview}</p>
           </div>
-          <div className="w-[30%] h-full text-gray-200 flex flex-row overflow-hidden break-word">
-            <p className="mr-1">Genre:</p>
+          <div className="w-[30%] h-full text-gray-200 flex flex-row overflow-hidden break-word text-wrap">
+            <p className="mr-1 opacity-50">Genre:</p>
 
-            {genres.map((genre, index) => (
+            {genres.map((genre) => (
               <p key={genre.id} className="mr-1 ">
-                {genre.name}{" "}
-                <span>{index === genres.length - 1 ? "." : ","}</span>
+                {genre.name}.
               </p>
             ))}
           </div>
